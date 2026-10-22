@@ -1,0 +1,1823 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SunuRécolte</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root {
+  --green-dark: #1B4332;
+  --green: #2D6A4F;
+  --green-mid: #40916C;
+  --green-light: #74C69D;
+  --green-pale: #D8F3DC;
+  --gold: #B7791F;
+  --gold-light: #FEF3C7;
+  --blue-dark: #1E3A5F;
+  --gray-100: #F8F9FA;
+  --gray-200: #E9ECEF;
+  --gray-600: #6C757D;
+  --white: #FFFFFF;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+  --radius: 12px;
+  --radius-lg: 20px;
+}
+
+* { box-sizing: border-box; }
+body { font-family: 'Inter', sans-serif; background: #F0F4F0; color: #1A1A1A; }
+
+/* ===== NAVBAR ===== */
+.navbar-custom {
+  background: var(--green-dark);
+  padding: 0 32px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+}
+.navbar-brand-custom {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  color: white;
+  text-decoration: none;
+}
+.navbar-brand-custom span { color: var(--green-light); }
+.nav-user { display: none; align-items: center; gap: 16px; }
+.nav-role-badge {
+  background: rgba(255,255,255,0.15);
+  color: white;
+  padding: 4px 14px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.nav-user-name { color: white; font-weight: 500; font-size: 14px; }
+.btn-nav { border: 1.5px solid rgba(255,255,255,0.35); color: white; background: transparent; padding: 7px 18px; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+.btn-nav:hover { background: rgba(255,255,255,0.12); color: white; }
+.btn-nav-gold { background: var(--gold); border-color: var(--gold); color: white; }
+.btn-nav-gold:hover { background: #a06919; color: white; }
+
+/* ===== PAGES ===== */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ===== HERO ===== */
+.hero {
+  position: relative;
+  min-height: calc(100vh - 64px);
+  display: flex;
+  align-items: center;
+  background-image:
+    linear-gradient(
+      90deg,
+      rgba(11, 33, 22, 0.94) 0%,
+      rgba(15, 41, 30, 0.88) 35%,
+      rgba(15, 41, 30, 0.65) 60%,
+      rgba(15, 41, 30, 0.25) 85%,
+      rgba(11, 33, 22, 0.50) 100%
+    ),
+    url('images/hero.jpg');
+  background-size: cover;
+  background-position: center 25%;
+  background-repeat: no-repeat;
+  overflow: hidden;
+  padding: 80px 0 100px;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  width: 600px; height: 600px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(116, 198, 157, 0.12) 0%, rgba(255,255,255,0) 70%);
+  top: -150px; left: -100px;
+  pointer-events: none;
+}
+.hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 90px;
+  background: linear-gradient(to top, rgba(11, 33, 22, 0.9) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+.hero-content { position: relative; z-index: 2; }
+.hero-tag { display: inline-block; background: rgba(116,198,157,0.22); color: var(--green-light); padding: 7px 18px; border-radius: 20px; font-size: 13px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; margin-bottom: 22px; backdrop-filter: blur(4px); border: 1px solid rgba(116,198,157,0.3); }
+.hero-title { font-family: 'Playfair Display', serif; font-size: 54px; line-height: 1.15; color: white; margin-bottom: 22px; text-shadow: 0 2px 12px rgba(0,0,0,0.3); }
+.hero-title em { font-style: italic; color: var(--green-light); }
+.hero-desc { font-size: 17px; color: rgba(255,255,255,0.9); line-height: 1.7; max-width: 540px; margin-bottom: 34px; text-shadow: 0 1px 4px rgba(0,0,0,0.25); }
+.btn-hero { padding: 14px 30px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; border: none; transition: all 0.25s ease; text-decoration: none; display: inline-flex; align-items: center; justify-content: center; }
+.btn-hero-primary { background: var(--gold); color: white; box-shadow: 0 4px 14px rgba(183,121,31,0.35); }
+.btn-hero-primary:hover { background: #a06919; transform: translateY(-2px); box-shadow: 0 8px 22px rgba(183,121,31,0.5); color: white; }
+.btn-hero-outline { background: rgba(255,255,255,0.12); color: white; border: 1.5px solid rgba(255,255,255,0.45); backdrop-filter: blur(6px); }
+.btn-hero-outline:hover { background: rgba(255,255,255,0.25); color: white; border-color: white; transform: translateY(-2px); }
+
+/* Floating Glass Card */
+.hero-glass-card {
+  background: rgba(15, 41, 30, 0.72);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 20px;
+  padding: 24px 26px;
+  max-width: 380px;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.35);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.hero-glass-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 44px rgba(0, 0, 0, 0.45);
+}
+.hero-live-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(116, 198, 157, 0.2);
+  color: var(--green-light);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(116, 198, 157, 0.35);
+}
+.hero-live-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #10B981;
+  box-shadow: 0 0 8px #10B981;
+  display: inline-block;
+  animation: pulseDot 2s infinite;
+}
+@keyframes pulseDot {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+.hero-glass-pill {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.12);
+  color: white;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* Hero Stats Row */
+.hero-stats-row {
+  display: flex;
+  gap: 24px;
+  margin-top: 36px;
+  padding-top: 24px;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+}
+.hero-stat-item {
+  flex: 1;
+}
+.hero-stat-val {
+  font-family: 'Playfair Display', serif;
+  font-size: 26px;
+  font-weight: 700;
+  color: white;
+  line-height: 1;
+  margin-bottom: 5px;
+}
+.hero-stat-val span {
+  color: var(--green-light);
+  font-size: 20px;
+}
+.hero-stat-lbl {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.feature-card { background: white; border-radius: var(--radius-lg); padding: 32px; border: 1px solid var(--gray-200); transition: all 0.2s; height: 100%; }
+.feature-card:hover { box-shadow: var(--shadow-md); transform: translateY(-4px); }
+.feature-icon { width: 56px; height: 56px; border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 26px; margin-bottom: 20px; }
+.feature-icon-green { background: var(--green-pale); }
+.feature-card h5 { font-weight: 700; color: var(--green-dark); margin-bottom: 10px; }
+.feature-card p { color: var(--gray-600); font-size: 14px; line-height: 1.7; margin: 0; }
+
+.hero-stat { text-align: center; padding: 20px; }
+.hero-stat-value { font-family: 'Playfair Display', serif; font-size: 42px; color: white; line-height: 1; margin-bottom: 8px; }
+.hero-stat-label { color: rgba(255,255,255,0.65); font-size: 13px; font-weight: 500; }
+
+/* ===== AUTH ===== */
+.auth-page { min-height: calc(100vh - 64px); background: linear-gradient(135deg, var(--green-pale) 0%, white 100%); display: flex; align-items: center; justify-content: center; padding: 40px 20px; }
+.auth-card { background: white; border-radius: var(--radius-lg); padding: 48px; width: 100%; max-width: 460px; box-shadow: var(--shadow-lg); }
+.auth-icon { width: 64px; height: 64px; background: var(--green-pale); border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 28px; margin-bottom: 24px; }
+.auth-title { font-family: 'Playfair Display', serif; font-size: 30px; color: var(--green-dark); margin-bottom: 6px; }
+.auth-sub { color: var(--gray-600); font-size: 14px; margin-bottom: 28px; }
+.form-label { font-weight: 500; font-size: 13px; color: #374151; margin-bottom: 6px; }
+.form-control, .form-select { border: 1.5px solid #E5E7EB; border-radius: 10px; padding: 11px 14px; font-size: 14px; font-family: 'Inter', sans-serif; transition: border-color 0.2s; }
+.form-control:focus, .form-select:focus { border-color: var(--green-mid); box-shadow: 0 0 0 3px rgba(64,145,108,0.12); outline: none; }
+.input-group-text { background: #F9FAFB; border: 1.5px solid #E5E7EB; border-radius: 10px 0 0 10px; color: var(--gray-600); }
+.input-group .form-control { border-radius: 0 10px 10px 0; border-left: none; }
+.input-group .form-control:focus { border-left: none; }
+
+.role-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.role-card { border: 2px solid #E5E7EB; border-radius: 12px; padding: 16px 10px; text-align: center; cursor: pointer; transition: all 0.2s; }
+.role-card:hover { border-color: var(--green-mid); background: var(--green-pale); }
+.role-card.selected { border-color: var(--green); background: var(--green-pale); }
+.role-card .role-emoji { font-size: 26px; display: block; margin-bottom: 6px; }
+.role-card .role-name { font-size: 12px; font-weight: 600; color: var(--green-dark); }
+
+.btn-green { background: var(--green); color: white; border: none; border-radius: 10px; padding: 13px; font-size: 15px; font-weight: 600; width: 100%; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; }
+.btn-green:hover { background: var(--green-dark); }
+.auth-switch { text-align: center; margin-top: 20px; font-size: 14px; color: var(--gray-600); }
+.auth-switch a { color: var(--green); font-weight: 600; cursor: pointer; text-decoration: none; }
+.auth-switch a:hover { text-decoration: underline; }
+
+/* ===== DASHBOARD ===== */
+.dash-wrapper { display: flex; min-height: calc(100vh - 64px); }
+
+.sidebar {
+  width: 260px;
+  background: white;
+  border-right: 1px solid #EAECEF;
+  padding: 24px 0;
+  flex-shrink: 0;
+  position: sticky;
+  top: 64px;
+  height: calc(100vh - 64px);
+  overflow-y: auto;
+}
+
+.sidebar-section-label { font-size: 10px; font-weight: 700; color: #9CA3AF; text-transform: uppercase; letter-spacing: 1.5px; padding: 8px 24px; margin-top: 8px; }
+
+.sidebar-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: calc(100% - 24px);
+  margin: 2px 12px;
+  padding: 11px 14px;
+  border: none;
+  background: transparent;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  color: #4B5563;
+  text-align: left;
+  transition: all 0.15s;
+  font-family: 'Inter', sans-serif;
+}
+.sidebar-btn:hover { background: var(--green-pale); color: var(--green-dark); }
+.sidebar-btn.active { background: var(--green-pale); color: var(--green-dark); font-weight: 600; }
+.sidebar-btn .si { font-size: 17px; width: 22px; }
+.sidebar-btn .notif { background: #EF4444; color: white; border-radius: 20px; padding: 1px 7px; font-size: 11px; font-weight: 700; margin-left: auto; }
+
+.sidebar-divider { border: none; border-top: 1px solid #F3F4F6; margin: 12px 24px; }
+
+.sidebar-user-card { margin: 16px 12px; padding: 14px; background: var(--green-pale); border-radius: 12px; }
+.sidebar-user-name { font-weight: 600; font-size: 14px; color: var(--green-dark); }
+.sidebar-user-role { font-size: 12px; color: var(--green-mid); }
+
+.dash-main { flex: 1; padding: 32px 36px; overflow-y: auto; }
+
+.dash-header { margin-bottom: 28px; }
+.dash-title { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--green-dark); margin: 0; }
+.dash-subtitle { color: var(--gray-600); font-size: 14px; margin-top: 4px; }
+
+/* ===== STAT CARDS ===== */
+.stat-card { background: white; border-radius: var(--radius); padding: 24px; border: 1px solid #EAECEF; }
+.stat-value { font-family: 'Playfair Display', serif; font-size: 36px; line-height: 1; margin-bottom: 6px; color: var(--green-dark); }
+.stat-label { font-size: 13px; color: var(--gray-600); font-weight: 500; }
+.stat-icon { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; margin-bottom: 16px; }
+
+/* ===== PRODUCT CARDS ===== */
+.product-card { background: white; border-radius: var(--radius); border: 1px solid #EAECEF; overflow: hidden; transition: all 0.2s; height: 100%; }
+.product-card:hover { box-shadow: var(--shadow-md); transform: translateY(-3px); }
+.product-card-header { background: linear-gradient(135deg, var(--green-dark), var(--green-mid)); padding: 20px; color: white; }
+.product-card-name { font-family: 'Playfair Display', serif; font-size: 20px; margin-bottom: 4px; }
+.product-card-zone { font-size: 12px; opacity: 0.8; }
+.product-card-body { padding: 18px; }
+.product-row { display: flex; justify-content: space-between; padding: 7px 0; border-bottom: 1px solid #F3F4F6; font-size: 13px; }
+.product-row:last-child { border-bottom: none; }
+.product-row-label { color: var(--gray-600); }
+.product-row-value { font-weight: 600; color: #1A1A1A; }
+.product-card-footer { padding: 14px 18px; background: #FAFAFA; display: flex; justify-content: space-between; align-items: center; }
+
+/* ===== BADGES ===== */
+.badge-disponible { background: #DCFCE7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+.badge-vendu { background: #FEE2E2; color: #991B1B; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+.badge-en_attente { background: #FEF9C3; color: #854D0E; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+.badge-en_attente_confirmation { background: #FED7AA; color: #9A3412; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+.badge-payé { background: #DCFCE7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+.badge-en_livraison { background: #DBEAFE; color: #1E40AF; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+.badge-livré, .badge-livre { background: #D1FAE5; color: #065F46; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+
+/* ===== BUTTONS ===== */
+.btn-primary-custom { background: var(--green); color: white; border: none; border-radius: 9px; padding: 9px 20px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; }
+.btn-primary-custom:hover { background: var(--green-dark); }
+.btn-gold { background: var(--gold); color: white; border: none; border-radius: 9px; padding: 9px 20px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; }
+.btn-gold:hover { background: #a06919; }
+.btn-outline-custom { background: transparent; color: var(--green); border: 1.5px solid var(--green); border-radius: 9px; padding: 8px 18px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; }
+.btn-outline-custom:hover { background: var(--green-pale); }
+.btn-danger-custom { background: #FEE2E2; color: #991B1B; border: none; border-radius: 9px; padding: 8px 16px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: 'Inter', sans-serif; transition: all 0.2s; }
+.btn-danger-custom:hover { background: #FECACA; }
+
+/* ===== MODALS ===== */
+.modal-content { border: none; border-radius: var(--radius-lg); box-shadow: var(--shadow-lg); }
+.modal-header { border-bottom: 1px solid #F3F4F6; padding: 24px 28px 16px; }
+.modal-title { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--green-dark); }
+.modal-body { padding: 20px 28px; }
+.modal-footer { border-top: 1px solid #F3F4F6; padding: 16px 28px 24px; }
+
+/* ===== EMPTY STATE ===== */
+.empty-state { text-align: center; padding: 60px 40px; }
+.empty-icon { font-size: 52px; margin-bottom: 16px; }
+.empty-title { font-size: 18px; font-weight: 700; color: #374151; margin-bottom: 8px; }
+.empty-text { font-size: 14px; color: var(--gray-600); line-height: 1.6; }
+
+/* ===== SUIVI ===== */
+.suivi-step { display: flex; align-items: center; gap: 10px; padding: 6px 0; font-size: 12px; }
+.suivi-dot { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0; }
+.suivi-dot-active { background: var(--green); color: white; }
+.suivi-dot-done { background: var(--green-pale); color: var(--green); }
+.suivi-dot-pending { background: #F3F4F6; color: #9CA3AF; }
+
+/* ===== TABLE ===== */
+.table-custom thead th { background: var(--green-dark); color: white; font-weight: 500; font-size: 13px; padding: 14px 16px; border: none; }
+.table-custom thead th:first-child { border-radius: 10px 0 0 0; }
+.table-custom thead th:last-child { border-radius: 0 10px 0 0; }
+.table-custom tbody td { padding: 12px 16px; font-size: 13px; border-bottom: 1px solid #F3F4F6; vertical-align: middle; }
+.table-custom tbody tr:hover { background: #FAFAFA; }
+
+/* ===== TOAST ===== */
+.toast-container-custom { position: fixed; bottom: 28px; right: 28px; z-index: 9999; }
+.toast-custom { background: var(--green-dark); color: white; padding: 14px 20px; border-radius: 12px; font-size: 14px; font-weight: 500; box-shadow: var(--shadow-lg); opacity: 0; transform: translateY(12px); transition: all 0.3s; max-width: 340px; }
+.toast-custom.show { opacity: 1; transform: translateY(0); }
+.toast-custom.success { background: #065F46; }
+.toast-custom.error { background: #991B1B; }
+.toast-custom.warning { background: #854D0E; }
+
+/* ===== PROFIL ===== */
+.profil-avatar { width: 90px; height: 90px; border-radius: 50%; background: var(--green-pale); display: flex; align-items: center; justify-content: center; font-size: 40px; margin: 0 auto 16px; border: 3px solid var(--green-light); }
+
+/* ===== SPINNER ===== */
+.spinner-green { color: var(--green); }
+.loader-box { display: flex; justify-content: center; align-items: center; height: 300px; }
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 991px) {
+  .hero {
+    background-image:
+      linear-gradient(
+        180deg,
+        rgba(11, 33, 22, 0.94) 0%,
+        rgba(15, 41, 30, 0.84) 50%,
+        rgba(11, 33, 22, 0.92) 100%
+      ),
+      url('images/hero.jpg');
+    background-position: center 20%;
+    padding: 60px 0;
+  }
+  .hero-glass-card { margin-top: 30px; }
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: 48px 0;
+    min-height: auto;
+  }
+  .hero-title { font-size: 34px; line-height: 1.2; }
+  .hero-desc { font-size: 15px; }
+  .hero-stats-row { flex-direction: column; gap: 16px; margin-top: 26px; padding-top: 18px; }
+  .hero-stat-val { font-size: 22px; }
+  .hero-stat-lbl { font-size: 12px; }
+  .dash-wrapper { flex-direction: column; }
+  .sidebar { width: 100%; height: auto; position: relative; top: 0; }
+  .dash-main { padding: 20px 16px; }
+  .navbar-custom { padding: 0 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar-custom">
+  <a class="navbar-brand-custom" href="#" onclick="showPage('home')">Sunu<span>Récolte</span></a>
+  <div id="nav-auth" style="display:flex;gap:10px">
+    <button class="btn-nav" onclick="showPage('login')">Se connecter</button>
+    <button class="btn-nav btn-nav-gold" onclick="showPage('register')">S'inscrire</button>
+  </div>
+  <div class="nav-user" id="nav-user">
+    <span class="nav-user-name" id="nav-name"></span>
+    <span class="nav-role-badge" id="nav-role"></span>
+    <button class="btn-nav" onclick="logout()"><i class="bi bi-box-arrow-right me-1"></i>Déconnexion</button>
+  </div>
+</nav>
+
+<!-- TOAST -->
+<div class="toast-container-custom">
+  <div class="toast-custom" id="toast"></div>
+</div>
+
+<!-- ===== PAGE ACCUEIL ===== -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="container position-relative" style="z-index: 2;">
+      <div class="row align-items-center">
+        <div class="col-lg-7 col-xl-6 hero-content py-4">
+          <div class="hero-tag">🌾 Plateforme agricole du Sénégal • 100% Locale</div>
+          <h1 class="hero-title">Vendez vos récoltes,<br><em>partout au Sénégal</em></h1>
+          <p class="hero-desc">SunuRécolte connecte agriculteurs, acheteurs et transporteurs pour rendre le commerce agricole simple, transparent et direct du champ.</p>
+          <div class="d-flex gap-3 flex-wrap mb-4">
+            <button class="btn-hero btn-hero-primary" onclick="showPage('register')">
+              <i class="bi bi-person-plus me-2"></i>Commencer gratuitement
+            </button>
+            <button class="btn-hero btn-hero-outline" onclick="showPage('login')">
+              Se connecter
+            </button>
+          </div>
+          <div class="hero-stats-row">
+            <div class="hero-stat-item">
+              <div class="hero-stat-val">3 <span>Profils</span></div>
+              <div class="hero-stat-lbl">Agriculteurs, Acheteurs, Transporteurs</div>
+            </div>
+            <div class="hero-stat-item">
+              <div class="hero-stat-val">SMS <span>Auto</span></div>
+              <div class="hero-stat-lbl">Suivi instantané des commandes</div>
+            </div>
+            <div class="hero-stat-item">
+              <div class="hero-stat-val">100% <span>Direct</span></div>
+              <div class="hero-stat-lbl">Prix juste sans intermédiaires</div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-5 col-xl-5 offset-xl-1 d-none d-lg-flex justify-content-end align-items-end">
+          <div class="hero-glass-card">
+            <div class="d-flex align-items-center gap-3 mb-2">
+              <span class="hero-live-badge"><span class="hero-live-dot"></span> EN DIRECT DU TERROIR</span>
+            </div>
+            <h5 class="text-white mb-2" style="font-family:'Playfair Display',serif; font-size: 20px;">Récoltes Fraîches & Locales</h5>
+            <p class="text-white-50 mb-3" style="font-size: 13px; line-height: 1.6;">
+              Aubergines, piments, oignons et maraîchage sénégalais directement négociés du producteur à l'acheteur.
+            </p>
+            <div class="d-flex gap-2 flex-wrap">
+              <span class="hero-glass-pill"><i class="bi bi-geo-alt-fill text-warning me-1"></i>Niayes & Régions</span>
+              <span class="hero-glass-pill"><i class="bi bi-shield-check text-success me-1"></i>Fraîcheur certifiée</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:white;padding:80px 0;">
+    <div class="container">
+      <div class="text-center mb-5">
+        <h2 style="font-family:'Playfair Display',serif;font-size:36px;color:var(--green-dark)">Comment ça marche ?</h2>
+        <p class="text-muted">Une plateforme pensée pour chaque acteur de la chaîne agricole</p>
+      </div>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="feature-card">
+            <div class="feature-icon feature-icon-green">🌾</div>
+            <h5>Publiez vos récoltes</h5>
+            <p>Mettez en ligne vos produits en quelques clics et touchez des acheteurs partout au Sénégal.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card">
+            <div class="feature-icon feature-icon-green">🛒</div>
+            <h5>Commandez facilement</h5>
+            <p>Trouvez les produits agricoles dont vous avez besoin, filtrez par zone et commandez en ligne.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card">
+            <div class="feature-icon feature-icon-green">🚚</div>
+            <h5>Livraison assurée</h5>
+            <p>Des transporteurs locaux prennent en charge vos livraisons avec notification SMS automatique.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="background:var(--green-dark);padding:60px 0;">
+    <div class="container">
+      <div class="row g-4 text-center text-white">
+        <div class="col-md-4"><div style="font-family:'Playfair Display',serif;font-size:48px">100%</div><div style="opacity:0.7;font-size:14px">Sécurisé avec JWT</div></div>
+        <div class="col-md-4"><div style="font-family:'Playfair Display',serif;font-size:48px">SMS</div><div style="opacity:0.7;font-size:14px">Notifications automatiques</div></div>
+        <div class="col-md-4"><div style="font-family:'Playfair Display',serif;font-size:48px">3</div><div style="opacity:0.7;font-size:14px">Rôles connectés</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PAGE LOGIN ===== -->
+<div class="page" id="page-login">
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="auth-icon">🔑</div>
+      <div class="auth-title">Bon retour</div>
+      <div class="auth-sub">Connectez-vous à votre compte SunuRécolte</div>
+      <div class="alert alert-danger d-none py-2" id="login-error" style="font-size:13px;border-radius:10px"></div>
+      <div class="mb-3">
+        <label class="form-label">Numéro de téléphone</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-phone"></i></span>
+          <input type="text" class="form-control" id="login-tel" placeholder="77XXXXXXX">
+        </div>
+      </div>
+      <div class="mb-4">
+        <label class="form-label">Mot de passe</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-lock"></i></span>
+          <input type="password" class="form-control" id="login-pwd" placeholder="••••••">
+        </div>
+      </div>
+      <button class="btn-green" onclick="login()"><i class="bi bi-box-arrow-in-right me-2"></i>Se connecter</button>
+      <div class="auth-switch">Pas encore inscrit ? <a onclick="showPage('register')">Créer un compte</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== PAGE REGISTER ===== -->
+<div class="page" id="page-register">
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="auth-icon">🌱</div>
+      <div class="auth-title">Créer un compte</div>
+      <div class="auth-sub">Rejoignez la communauté SunuRécolte</div>
+      <div class="alert alert-danger d-none py-2" id="register-error" style="font-size:13px;border-radius:10px"></div>
+      <div class="mb-3">
+        <label class="form-label">Nom complet</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-person"></i></span>
+          <input type="text" class="form-control" id="reg-name" placeholder="Votre nom">
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Numéro de téléphone</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-phone"></i></span>
+          <input type="text" class="form-control" id="reg-tel" placeholder="77XXXXXXX">
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Mot de passe</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="bi bi-lock"></i></span>
+          <input type="password" class="form-control" id="reg-pwd" placeholder="Minimum 6 caractères">
+        </div>
+      </div>
+      <div class="mb-4">
+        <label class="form-label">Je suis</label>
+        <div class="role-grid">
+          <div class="role-card" onclick="selectRole('agriculteur', this)">
+            <span class="role-emoji">🌾</span>
+            <span class="role-name">Agriculteur</span>
+          </div>
+          <div class="role-card" onclick="selectRole('client', this)">
+            <span class="role-emoji">🛒</span>
+            <span class="role-name">Client</span>
+          </div>
+          <div class="role-card" onclick="selectRole('transporteur', this)">
+            <span class="role-emoji">🚚</span>
+            <span class="role-name">Transporteur</span>
+          </div>
+        </div>
+      </div>
+      <button class="btn-green" onclick="register()"><i class="bi bi-person-check me-2"></i>Créer mon compte</button>
+      <div class="auth-switch">Déjà inscrit ? <a onclick="showPage('login')">Se connecter</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DASHBOARD ===== -->
+<div class="page" id="page-dashboard">
+  <div class="dash-wrapper">
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+      <div class="sidebar-user-card" id="sidebar-user-card">
+        <div class="sidebar-user-name" id="sidebar-name">-</div>
+        <div class="sidebar-user-role" id="sidebar-role">-</div>
+      </div>
+
+      <hr class="sidebar-divider">
+      <div class="sidebar-section-label">Navigation</div>
+
+      <!-- Menu Agriculteur -->
+      <div id="menu-agriculteur" style="display:none">
+        <button class="sidebar-btn active" onclick="activateTab(this, chargerMesRecoltes)">
+          <i class="bi bi-flower1 si"></i> Mes récoltes
+        </button>
+        <button class="sidebar-btn" onclick="activateTab(this, ouvrirModalPublier)">
+          <i class="bi bi-plus-circle si"></i> Publier une récolte
+        </button>
+        <button class="sidebar-btn" onclick="activateTab(this, chargerCommandesSurMesRecoltes)">
+          <i class="bi bi-inbox si"></i> Commandes reçues
+          <span class="notif" id="notif-agri" style="display:none">0</span>
+        </button>
+        <button class="sidebar-btn" onclick="activateTab(this, chargerHistoriqueVentes)">
+          <i class="bi bi-clock-history si"></i> Historique ventes
+        </button>
+        <button class="sidebar-btn" onclick="activateTab(this, chargerStatistiques)">
+          <i class="bi bi-bar-chart si"></i> Statistiques
+        </button>
+        <button class="sidebar-btn" onclick="activateTab(this, chargerGraphique)">
+          <i class="bi bi-graph-up si"></i> Graphiques
+        </button>
+        <button class="sidebar-btn" onclick="activateTab(this, chargerMonProfil)">
+          <i class="bi bi-person-circle si"></i> Mon profil
+        </button>
+      </div>
+
+      <!-- Menu Client -->
+      <div id="menu-client" style="display:none">
+        <button class="sidebar-btn active" onclick="activateTab(this, chargerMarche)">
+          <i class="bi bi-shop si"></i> Marché
+        </button>
+        <button class="sidebar-btn" onclick="activateTab(this, chargerMesCommandes)">
+          <i class="bi bi-bag-check si"></i> Mes commandes
+          <span class="notif" id="notif-badge" style="display:none">0</span>
+        </button>
+        <button class="sidebar-btn" onclick="activateTab(this, chargerStatistiques)">
+          <i class="bi bi-bar-chart si"></i> Statistiques
+        </button>
+        <button class="sidebar-btn" onclick="activateTab(this, chargerMonProfil)">
+          <i class="bi bi-person-circle si"></i> Mon profil
+        </button>
+      </div>
+<!-- Menu Admin -->
+<div id="menu-admin" style="display:none">
+  <button class="sidebar-btn active" onclick="activateTab(this, chargerDashboardAdmin)">
+    <i class="bi bi-speedometer2 si"></i> Tableau de bord
+  </button>
+  <button class="sidebar-btn" onclick="activateTab(this, chargerUtilisateurs)">
+    <i class="bi bi-people si"></i> Utilisateurs
+  </button>
+  <button class="sidebar-btn" onclick="activateTab(this, chargerRecoltesAdmin)">
+    <i class="bi bi-flower1 si"></i> Récoltes
+  </button>
+  <button class="sidebar-btn" onclick="activateTab(this, chargerCommandesAdmin)">
+    <i class="bi bi-bag-check si"></i> Commandes
+  </button>
+  <button class="sidebar-btn" onclick="activateTab(this, chargerMonProfil)">
+    <i class="bi bi-person-circle si"></i> Mon profil
+  </button>
+</div>
+      <!-- Menu Transporteur -->
+      <div id="menu-transporteur" style="display:none">
+        <button class="sidebar-btn active" onclick="activateTab(this, chargerLivraisons)">
+          <i class="bi bi-truck si"></i> Livraisons disponibles
+        </button>
+        <button class="sidebar-btn" onclick="activateTab(this, chargerMesLivraisons)">
+          <i class="bi bi-check2-circle si"></i> Mes livraisons
+        </button>
+        <button class="sidebar-btn" onclick="activateTab(this, chargerStatistiques)">
+          <i class="bi bi-bar-chart si"></i> Statistiques
+        </button>
+        <button class="sidebar-btn" onclick="activateTab(this, chargerMonProfil)">
+          <i class="bi bi-person-circle si"></i> Mon profil
+        </button>
+      </div>
+
+      <hr class="sidebar-divider">
+      <button class="sidebar-btn" onclick="logout()" style="color:#DC2626">
+        <i class="bi bi-box-arrow-left si"></i> Déconnexion
+      </button>
+    </div>
+
+    <!-- CONTENU PRINCIPAL -->
+    <div class="dash-main" id="dash-content">
+      <div class="loader-box"><div class="spinner-border spinner-green"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PUBLIER -->
+<div class="modal fade" id="modal-publier" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">🌾 Publier une récolte</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <div class="mb-3">
+          <label class="form-label">Produit</label>
+          <input type="text" class="form-control" id="pub-produit" placeholder="Ex: Mangue Kent">
+        </div>
+        <div class="row g-3 mb-3">
+          <div class="col-6">
+            <label class="form-label">Quantité (kg)</label>
+            <input type="number" class="form-control" id="pub-quantite" placeholder="Ex: 5000">
+          </div>
+          <div class="col-6">
+            <label class="form-label">Prix unitaire (FCFA/kg)</label>
+            <input type="number" class="form-control" id="pub-prix" placeholder="Ex: 500">
+          </div>
+        </div>
+        <div class="row g-3 mb-3">
+          <div class="col-6">
+            <label class="form-label">Zone</label>
+            <input type="text" class="form-control" id="pub-zone" placeholder="Ex: Bignona">
+          </div>
+          <div class="col-6">
+            <label class="form-label">Date de récolte</label>
+            <input type="date" class="form-control" id="pub-date">
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Image du produit (optionnel)</label>
+    <input type="file" class="form-control" id="pub-image" accept="image/*" capture="environment">
+<div class="d-flex gap-2 mt-2">
+  <button type="button" class="btn-outline-custom btn-sm w-100" onclick="document.getElementById('pub-image').removeAttribute('capture');document.getElementById('pub-image').click()">
+    <i class="bi bi-image me-1"></i>Galerie
+  </button>
+  <button type="button" class="btn-outline-custom btn-sm w-100" onclick="document.getElementById('pub-image').setAttribute('capture','environment');document.getElementById('pub-image').click()">
+    <i class="bi bi-camera me-1"></i>Caméra
+  </button>
+</div>
+<small class="text-muted">Format : JPG, PNG. Max : 2MB</small>
+          <small class="text-muted">Format : JPG, PNG. Max : 2MB</small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
+        <button class="btn-primary-custom" onclick="publierRecolte()"><i class="bi bi-check2 me-1"></i>Publier</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL MODIFIER -->
+<div class="modal fade" id="modal-modifier" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">✏️ Modifier la récolte</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="mod-id">
+        <div class="mb-3">
+          <label class="form-label">Produit</label>
+          <input type="text" class="form-control" id="mod-produit">
+        </div>
+        <div class="row g-3 mb-3">
+          <div class="col-6">
+            <label class="form-label">Quantité (kg)</label>
+            <input type="number" class="form-control" id="mod-quantite">
+          </div>
+          <div class="col-6">
+            <label class="form-label">Prix unitaire (FCFA/kg)</label>
+            <input type="number" class="form-control" id="mod-prix">
+          </div>
+        </div>
+        <div class="row g-3">
+          <div class="col-6">
+            <label class="form-label">Zone</label>
+            <input type="text" class="form-control" id="mod-zone">
+          </div>
+          <div class="col-6">
+            <label class="form-label">Date de récolte</label>
+            <input type="date" class="form-control" id="mod-date">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
+        <button class="btn-primary-custom" onclick="modifierRecolte()"><i class="bi bi-check2 me-1"></i>Sauvegarder</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL FILTRE -->
+<div class="modal fade" id="modal-filtre" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">🔍 Filtrer par zone</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <label class="form-label">Zone géographique</label>
+        <input type="text" class="form-control" id="filtre-zone" placeholder="Ex: Bignona, Kaolack...">
+      </div>
+      <div class="modal-footer flex-column gap-2">
+        <button class="btn-primary-custom w-100 justify-content-center" onclick="filtrerRecoltes()"><i class="bi bi-search me-1"></i>Appliquer</button>
+        <button class="btn btn-light w-100" onclick="chargerMarche()">Voir tout</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+const API = 'http://127.0.0.1:8000/api';
+let token = localStorage.getItem('sr_token');
+let user = JSON.parse(localStorage.getItem('sr_user') || 'null');
+let selectedRole = '';
+let mesRecoltesData = [];
+let toutesCommandes = [];
+let toutesVentes = [];
+
+// ===== UTILITAIRES =====
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.getElementById('page-' + p).classList.add('active');
+  window.scrollTo(0, 0);
+}
+
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast-custom show ' + type;
+  setTimeout(() => t.className = 'toast-custom', 3500);
+}
+
+function fmt(n) { return Number(n).toLocaleString('fr-FR') + ' FCFA'; }
+
+function loader() {
+  document.getElementById('dash-content').innerHTML = '<div class="loader-box"><div class="spinner-border spinner-green"></div></div>';
+}
+
+function activateTab(el, fn) {
+  document.querySelectorAll('.sidebar-btn').forEach(i => i.classList.remove('active'));
+  el.classList.add('active');
+  fn();
+}
+
+function ouvrirModalPublier() {
+  new bootstrap.Modal(document.getElementById('modal-publier')).show();
+}
+
+function statusBadge(statut) {
+  const map = {
+    'disponible': '<span class="badge-disponible">Disponible</span>',
+    'vendu': '<span class="badge-vendu">Vendu</span>',
+    'en_attente': '<span class="badge-en_attente">En attente</span>',
+    'en_attente_confirmation': '<span class="badge-en_attente_confirmation">⏳ Attente confirmation</span>',
+    'payé': '<span class="badge-payé">✅ Confirmé</span>',
+    'en_livraison': '<span class="badge-en_livraison">🚚 En livraison</span>',
+    'livré': '<span class="badge-livré">✅ Livré</span>',
+    'livre': '<span class="badge-livre">✅ Livré</span>',
+  };
+  return map[statut] || `<span class="badge bg-secondary">${statut}</span>`;
+}
+
+async function apiFetch(method, path, body = null) {
+  const headers = { 'Content-Type': 'application/json', 'Accept': 'application/json' };
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  try {
+    const res = await fetch(API + path, { method, headers, body: body ? JSON.stringify(body) : null });
+    return res.json();
+  } catch(e) {
+    return { message: 'Erreur de connexion. Vérifiez que Laravel est démarré.' };
+  }
+}
+
+// ===== AUTH =====
+function selectRole(role, el) {
+  selectedRole = role;
+  document.querySelectorAll('.role-card').forEach(o => o.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+async function register() {
+  const errEl = document.getElementById('register-error');
+  errEl.classList.add('d-none');
+  const name = document.getElementById('reg-name').value.trim();
+  const telephone = document.getElementById('reg-tel').value.trim();
+  const password = document.getElementById('reg-pwd').value;
+  if (!name || !telephone || !password || !selectedRole) {
+    errEl.textContent = 'Tous les champs sont requis.';
+    errEl.classList.remove('d-none');
+    return;
+  }
+  const data = await apiFetch('POST', '/auth/register', { name, telephone, password, role: selectedRole });
+  if (data.token) {
+    token = data.token;
+    user = data.user;
+    localStorage.setItem('sr_token', token);
+    localStorage.setItem('sr_user', JSON.stringify(user));
+    initDashboard();
+  } else {
+    errEl.textContent = data.message || "Erreur lors de l'inscription.";
+    errEl.classList.remove('d-none');
+  }
+}
+
+async function login() {
+  const errEl = document.getElementById('login-error');
+  errEl.classList.add('d-none');
+  const telephone = document.getElementById('login-tel').value.trim();
+  const password = document.getElementById('login-pwd').value;
+  if (!telephone || !password) {
+    errEl.textContent = 'Téléphone et mot de passe requis.';
+    errEl.classList.remove('d-none');
+    return;
+  }
+  const data = await apiFetch('POST', '/auth/login', { telephone, password });
+  if (data.token) {
+    token = data.token;
+    user = data.user || { telephone, role: 'client', name: telephone };
+    localStorage.setItem('sr_token', token);
+    localStorage.setItem('sr_user', JSON.stringify(user));
+    initDashboard();
+  } else {
+    errEl.textContent = data.message || 'Identifiants incorrects.';
+    errEl.classList.remove('d-none');
+  }
+}
+
+async function logout() {
+  await apiFetch('POST', '/auth/logout');
+  token = null; user = null;
+  localStorage.removeItem('sr_token'); localStorage.removeItem('sr_user');
+  document.getElementById('nav-auth').style.display = 'flex';
+  document.getElementById('nav-user').style.display = 'none';
+  showPage('home');
+  showToast('Déconnexion réussie', 'success');
+}
+
+function initDashboard() {
+  document.getElementById('nav-auth').style.display = 'none';
+  document.getElementById('nav-user').style.display = 'flex';
+  document.getElementById('nav-name').textContent = user?.name || '';
+  document.getElementById('nav-role').textContent = user?.role || '';
+  document.getElementById('sidebar-name').textContent = user?.name || '';
+  document.getElementById('sidebar-role').textContent = user?.role || '';
+  ['agriculteur','client','transporteur'].forEach(r => document.getElementById('menu-' + r).style.display = 'none');
+  if (user?.role) document.getElementById('menu-' + user.role).style.display = 'block';
+  showPage('dashboard');
+  if (user?.role === 'agriculteur') { chargerMesRecoltes(); verifierNotifications(); setInterval(verifierNotifications, 30000); }
+  else if (user?.role === 'client') { chargerMarche(); verifierNotifications(); setInterval(verifierNotifications, 30000); }
+  else if (user?.role === 'transporteur') chargerLivraisons();
+}
+
+async function verifierNotifications() {
+  if (!user) return;
+  if (user.role === 'agriculteur') {
+    const data = await apiFetch('GET', '/commandes-sur-mes-recoltes');
+    const commandes = Array.isArray(data) ? data : [];
+    const n = commandes.filter(c => c.statut === 'en_attente').length;
+    const badge = document.getElementById('notif-agri');
+    if (badge) { badge.style.display = n > 0 ? 'inline' : 'none'; badge.textContent = n; }
+  }
+  if (user.role === 'client') {
+    const data = await apiFetch('GET', '/mes-commandes');
+    const commandes = Array.isArray(data) ? data : [];
+    const n = commandes.filter(c => c.statut === 'payé').length;
+    const badge = document.getElementById('notif-badge');
+    if (badge) { badge.style.display = n > 0 ? 'inline' : 'none'; badge.textContent = n; }
+  }
+}
+
+// ===== AGRICULTEUR =====
+async function chargerMesRecoltes() {
+  loader();
+  const data = await apiFetch('GET', '/mes-recoltes');
+  const recoltes = Array.isArray(data) ? data : [];
+  mesRecoltesData = recoltes;
+  const dispo = recoltes.filter(r => r.statut === 'disponible').length;
+  const vendu = recoltes.filter(r => r.statut === 'vendu').length;
+  const attente = recoltes.filter(r => r.statut === 'en_attente_confirmation').length;
+  const c = document.getElementById('dash-content');
+  c.innerHTML = `
+    <div class="dash-header d-flex justify-content-between align-items-start">
+      <div><div class="dash-title">Mes récoltes</div><div class="dash-subtitle">Gérez vos annonces de récoltes</div></div>
+      <button class="btn-primary-custom" onclick="ouvrirModalPublier()"><i class="bi bi-plus-lg me-1"></i>Nouvelle récolte</button>
+    </div>
+    <div class="row g-3 mb-4">
+      <div class="col-md-3"><div class="stat-card"><div class="stat-icon" style="background:#DCFCE7">🌾</div><div class="stat-value">${recoltes.length}</div><div class="stat-label">Total publiées</div></div></div>
+      <div class="col-md-3"><div class="stat-card"><div class="stat-icon" style="background:#D1FAE5">✅</div><div class="stat-value" style="color:#065F46">${dispo}</div><div class="stat-label">Disponibles</div></div></div>
+      <div class="col-md-3"><div class="stat-card"><div class="stat-icon" style="background:#FEF9C3">⏳</div><div class="stat-value" style="color:#854D0E">${attente}</div><div class="stat-label">En attente</div></div></div>
+      <div class="col-md-3"><div class="stat-card"><div class="stat-icon" style="background:#FEE2E2">💰</div><div class="stat-value" style="color:#991B1B">${vendu}</div><div class="stat-label">Vendues</div></div></div>
+    </div>
+    ${recoltes.length === 0 ? `
+      <div class="empty-state">
+        <div class="empty-icon">🌱</div>
+        <div class="empty-title">Aucune récolte publiée</div>
+        <div class="empty-text">Publiez votre première récolte pour commencer à vendre.</div>
+        <button class="btn-primary-custom mt-3" onclick="ouvrirModalPublier()"><i class="bi bi-plus-lg me-1"></i>Publier maintenant</button>
+      </div>` : `
+    <div class="row g-3">
+      ${recoltes.map(r => `
+      <div class="col-md-6 col-lg-4">
+       <div class="product-card">
+          ${r.image ? `<img src="http://127.0.0.1:8000/storage/${r.image}" style="width:100%;height:160px;object-fit:cover;">` : ''}
+          <div class="product-card-header">
+            <div class="product-card-name">${r.produit}</div>
+            <div class="product-card-zone"><i class="bi bi-geo-alt me-1"></i>${r.zone}</div>
+          </div>
+          <div class="product-card-body">
+            <div class="product-row"><span class="product-row-label">Quantité</span><span class="product-row-value">${Number(r.quantite).toLocaleString()} kg</span></div>
+            <div class="product-row"><span class="product-row-label">Prix unitaire</span><span class="product-row-value">${Number(r.prix_unitaire).toLocaleString()} FCFA/kg</span></div>
+            <div class="product-row"><span class="product-row-label">Total estimé</span><span class="product-row-value">${fmt(r.quantite * r.prix_unitaire)}</span></div>
+            <div class="product-row"><span class="product-row-label">Date récolte</span><span class="product-row-value">${r.date_recolte}</span></div>
+          </div>
+          <div class="product-card-footer">
+            ${statusBadge(r.statut)}
+            <div class="d-flex gap-2">
+              ${r.statut === 'disponible' ? `
+                <button class="btn-outline-custom btn-sm" onclick='ouvrirModalModifier(${r.id})'><i class="bi bi-pencil me-1"></i>Modifier</button>
+                <button class="btn-danger-custom" onclick="supprimerRecolte(${r.id})"><i class="bi bi-trash"></i></button>` : ''}
+              ${r.statut === 'en_attente_confirmation' ? `
+                <button class="btn-gold" onclick="confirmerVente(${r.id})"><i class="bi bi-check2-circle me-1"></i>Confirmer</button>` : ''}
+            </div>
+          </div>
+        </div>
+      </div>`).join('')}
+    </div>`}
+  `;
+}
+
+function ouvrirModalModifier(id) {
+  const r = mesRecoltesData.find(r => r.id === id);
+  if (!r) return;
+  document.getElementById('mod-id').value = r.id;
+  document.getElementById('mod-produit').value = r.produit;
+  document.getElementById('mod-quantite').value = r.quantite;
+  document.getElementById('mod-prix').value = r.prix_unitaire;
+  document.getElementById('mod-zone').value = r.zone;
+  document.getElementById('mod-date').value = r.date_recolte;
+  new bootstrap.Modal(document.getElementById('modal-modifier')).show();
+}
+
+async function modifierRecolte() {
+  const id = document.getElementById('mod-id').value;
+  const produit = document.getElementById('mod-produit').value.trim();
+  const quantite = document.getElementById('mod-quantite').value;
+  const prix_unitaire = document.getElementById('mod-prix').value;
+  const zone = document.getElementById('mod-zone').value.trim();
+  const date_recolte = document.getElementById('mod-date').value;
+  if (!produit || !quantite || !prix_unitaire || !zone || !date_recolte) return showToast('Tous les champs sont requis', 'error');
+  const data = await apiFetch('PUT', '/recoltes/' + id, { produit, quantite, prix_unitaire, zone, date_recolte });
+  if (data.recolte) {
+    bootstrap.Modal.getInstance(document.getElementById('modal-modifier'))?.hide();
+    showToast('Récolte modifiée !', 'success');
+    chargerMesRecoltes();
+  } else showToast(data.message || 'Erreur', 'error');
+}
+
+async function publierRecolte() {
+  const produit = document.getElementById('pub-produit').value.trim();
+  const quantite = document.getElementById('pub-quantite').value;
+  const prix_unitaire = document.getElementById('pub-prix').value;
+  const zone = document.getElementById('pub-zone').value.trim();
+  const date_recolte = document.getElementById('pub-date').value;
+  const imageFile = document.getElementById('pub-image').files[0];
+
+  if (!produit || !quantite || !prix_unitaire || !zone || !date_recolte)
+    return showToast('Tous les champs sont requis', 'error');
+
+  // Utiliser FormData pour envoyer l'image
+  const formData = new FormData();
+  formData.append('produit', produit);
+  formData.append('quantite', quantite);
+  formData.append('prix_unitaire', prix_unitaire);
+  formData.append('zone', zone);
+  formData.append('date_recolte', date_recolte);
+  if (imageFile) formData.append('image', imageFile);
+
+  const headers = { 'Accept': 'application/json' };
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+
+  try {
+    const res = await fetch(API + '/recoltes', {
+      method: 'POST',
+      headers: headers,
+      body: formData
+    });
+    const data = await res.json();
+    if (data.recolte) {
+      bootstrap.Modal.getInstance(document.getElementById('modal-publier'))?.hide();
+      showToast('Récolte publiée !', 'success');
+      ['pub-produit','pub-quantite','pub-prix','pub-zone','pub-date','pub-image'].forEach(id => document.getElementById(id).value = '');
+      chargerMesRecoltes();
+    } else {
+      showToast(data.message || 'Erreur', 'error');
+    }
+  } catch(e) {
+    showToast('Erreur de connexion', 'error');
+  }
+}
+
+async function supprimerRecolte(id) {
+  if (!confirm('Supprimer cette récolte ?')) return;
+  await apiFetch('DELETE', '/recoltes/' + id);
+  showToast('Récolte supprimée', 'success');
+  chargerMesRecoltes();
+}
+
+async function confirmerVente(recolte_id) {
+  if (!confirm('Confirmer la vente de cette récolte ?')) return;
+  const data = await apiFetch('GET', '/commandes-sur-mes-recoltes');
+  const commandes = Array.isArray(data) ? data : [];
+  const commande = commandes.find(c => c.recolte_id === recolte_id);
+  if (!commande) return showToast('Commande introuvable', 'error');
+  const result = await apiFetch('PUT', '/commandes/' + commande.id + '/confirmer');
+  if (result.commande) { showToast('Vente confirmée !', 'success'); chargerMesRecoltes(); }
+  else showToast(result.message || 'Erreur', 'error');
+}
+
+async function chargerCommandesSurMesRecoltes() {
+  loader();
+  const data = await apiFetch('GET', '/commandes-sur-mes-recoltes');
+  const commandes = Array.isArray(data) ? data : [];
+  const enAttente = commandes.filter(c => c.statut === 'en_attente').length;
+  const enLivraison = commandes.filter(c => c.statut === 'en_livraison').length;
+  const c = document.getElementById('dash-content');
+  c.innerHTML = `
+    <div class="dash-header"><div class="dash-title">Commandes reçues</div><div class="dash-subtitle">Gérez les commandes de vos clients</div></div>
+    <div class="row g-3 mb-4">
+      <div class="col-md-4"><div class="stat-card"><div class="stat-value">${commandes.length}</div><div class="stat-label">Total</div></div></div>
+      <div class="col-md-4"><div class="stat-card"><div class="stat-value" style="color:#854D0E">${enAttente}</div><div class="stat-label">En attente</div></div></div>
+      <div class="col-md-4"><div class="stat-card"><div class="stat-value" style="color:#1E40AF">${enLivraison}</div><div class="stat-label">En livraison</div></div></div>
+    </div>
+    ${commandes.length === 0 ? `
+      <div class="empty-state"><div class="empty-icon">📭</div><div class="empty-title">Aucune commande reçue</div><div class="empty-text">Les commandes de vos clients apparaîtront ici.</div></div>` : `
+    <div class="row g-3">
+      ${commandes.map(cmd => `
+      <div class="col-md-6 col-lg-4">
+        <div class="product-card">
+          <div class="product-card-header">
+            <div class="product-card-name">${cmd.recolte?.produit || 'Produit'}</div>
+            <div class="product-card-zone"><i class="bi bi-geo-alt me-1"></i>${cmd.recolte?.zone || ''}</div>
+          </div>
+          <div class="product-card-body">
+            <div class="product-row"><span class="product-row-label"><i class="bi bi-person me-1"></i>Client</span><span class="product-row-value"><a href="#" onclick="voirProfilClient(${cmd.client?.id})" style="color:var(--green)">${cmd.client?.name || 'N/A'}</a></span></div>
+            <div class="product-row"><span class="product-row-label">Téléphone</span><span class="product-row-value">${cmd.client?.telephone || 'N/A'}</span></div>
+            <div class="product-row"><span class="product-row-label">Quantité</span><span class="product-row-value">${cmd.quantite || 'N/A'} kg</span></div>
+            <div class="product-row"><span class="product-row-label">Montant</span><span class="product-row-value">${fmt(cmd.montant_total)}</span></div>
+            <div class="product-row"><span class="product-row-label">Date</span><span class="product-row-value">${cmd.created_at?.split('T')[0] || ''}</span></div>
+          </div>
+          <div class="product-card-footer">
+            ${statusBadge(cmd.statut)}
+            ${cmd.statut === 'en_attente' ? `<button class="btn-primary-custom" onclick="confirmerCommande(${cmd.id})"><i class="bi bi-check2-circle me-1"></i>Confirmer</button>` : ''}
+          </div>
+        </div>
+      </div>`).join('')}
+    </div>`}
+  `;
+}
+
+async function confirmerCommande(id) {
+  if (!confirm('Confirmer cette commande ?')) return;
+  const data = await apiFetch('PUT', '/commandes/' + id + '/confirmer');
+  if (data.commande) { showToast('Commande confirmée !', 'success'); chargerCommandesSurMesRecoltes(); }
+  else showToast(data.message || 'Erreur', 'error');
+}
+
+async function chargerHistoriqueVentes() {
+  loader();
+  const data = await apiFetch('GET', '/commandes-sur-mes-recoltes');
+  const commandes = Array.isArray(data) ? data : [];
+  toutesVentes = commandes;
+  const c = document.getElementById('dash-content');
+  c.innerHTML = `
+    <div class="dash-header d-flex justify-content-between align-items-start">
+      <div><div class="dash-title">Historique des ventes</div></div>
+      <div class="d-flex gap-2 flex-wrap">
+        <button class="btn-outline-custom btn-sm" onclick="filtrerVentes('tous')">Toutes</button>
+        <button class="btn-outline-custom btn-sm" onclick="filtrerVentes('en_attente')">En attente</button>
+        <button class="btn-outline-custom btn-sm" onclick="filtrerVentes('payé')">Confirmées</button>
+        <button class="btn-outline-custom btn-sm" onclick="filtrerVentes('en_livraison')">En livraison</button>
+        <button class="btn-outline-custom btn-sm" onclick="filtrerVentes('livré')">Livrées</button>
+      </div>
+    </div>
+    <div id="liste-ventes">${renderVentes(commandes)}</div>
+  `;
+}
+
+function renderVentes(commandes) {
+  if (commandes.length === 0) return `<div class="empty-state"><div class="empty-icon">📊</div><div class="empty-title">Aucune vente</div></div>`;
+  return `
+    <div class="table-responsive">
+      <table class="table table-custom align-middle">
+        <thead><tr>
+          <th>Produit</th><th>Client</th><th>Téléphone</th><th>Quantité</th><th>Montant</th><th>Date</th><th>Statut</th>
+        </tr></thead>
+        <tbody>
+          ${commandes.map(cmd => `<tr>
+            <td class="fw-bold">${cmd.recolte?.produit || 'N/A'}</td>
+            <td><a href="#" onclick="voirProfilClient(${cmd.client?.id})" style="color:var(--green)">${cmd.client?.name || 'N/A'}</a></td>
+            <td>${cmd.client?.telephone || 'N/A'}</td>
+            <td>${cmd.quantite || 'N/A'} kg</td>
+            <td class="fw-bold">${fmt(cmd.montant_total)}</td>
+            <td>${cmd.created_at?.split('T')[0] || ''}</td>
+            <td>${statusBadge(cmd.statut)}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>`;
+}
+
+function filtrerVentes(statut) {
+  const f = statut === 'tous' ? toutesVentes : toutesVentes.filter(c => c.statut === statut || (statut === 'livré' && c.statut === 'livre'));
+  document.getElementById('liste-ventes').innerHTML = renderVentes(f);
+}
+
+async function voirProfilClient(id) {
+  const data = await apiFetch('GET', '/client/' + id);
+  if (!data.client) return showToast('Erreur', 'error');
+  const c = document.getElementById('dash-content');
+  c.innerHTML = `
+    <div class="d-flex align-items-center gap-3 mb-4">
+      <button class="btn-outline-custom" onclick="chargerHistoriqueVentes()"><i class="bi bi-arrow-left me-1"></i>Retour</button>
+      <div class="dash-title">Profil du client</div>
+    </div>
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="stat-card text-center mb-3">
+          <div class="profil-avatar">🛒</div>
+          <h5 class="fw-bold" style="color:var(--green-dark)">${data.client.name}</h5>
+          <p class="text-muted mb-1"><i class="bi bi-phone me-1"></i>${data.client.telephone}</p>
+          <p class="text-muted small">Membre depuis ${data.client.membre_depuis}</p>
+        </div>
+        <div class="row g-3">
+          <div class="col-6"><div class="stat-card text-center"><div class="stat-value">${data.statistiques.total_commandes}</div><div class="stat-label">Total commandes</div></div></div>
+          <div class="col-6"><div class="stat-card text-center"><div class="stat-value" style="color:#065F46">${data.statistiques.commandes_livrees}</div><div class="stat-label">Livrées</div></div></div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ===== CLIENT =====
+async function chargerMarche(zone = '') {
+  bootstrap.Modal.getInstance(document.getElementById('modal-filtre'))?.hide();
+  loader();
+  const path = zone ? '/recoltes?zone=' + encodeURIComponent(zone) : '/recoltes';
+  const data = await apiFetch('GET', path);
+  const recoltes = Array.isArray(data) ? data : [];
+  const c = document.getElementById('dash-content');
+  c.innerHTML = `
+    <div class="dash-header d-flex justify-content-between align-items-start">
+      <div><div class="dash-title">Marché${zone ? ' — ' + zone : ''}</div><div class="dash-subtitle">${recoltes.length} récolte(s) disponible(s)</div></div>
+      <button class="btn-outline-custom" data-bs-toggle="modal" data-bs-target="#modal-filtre"><i class="bi bi-funnel me-1"></i>Filtrer</button>
+    </div>
+    ${recoltes.length === 0 ? `
+      <div class="empty-state"><div class="empty-icon">🌿</div><div class="empty-title">Aucune récolte disponible${zone ? ' dans cette zone' : ''}</div>
+      ${zone ? '<button class="btn-primary-custom mt-3" onclick="chargerMarche()">Voir tout</button>' : ''}</div>` : `
+    <div class="row g-3">
+      ${recoltes.map(r => `
+      <div class="col-md-6 col-lg-4">
+        <div class="product-card">
+          ${r.image ? `<img src="http://127.0.0.1:8000/storage/${r.image}" style="width:100%;height:160px;object-fit:cover;">` : ''}
+          <div class="product-card-header">
+            <div class="product-card-name">${r.produit}</div>
+            <div class="product-card-zone"><i class="bi bi-geo-alt me-1"></i>${r.zone}</div>
+          </div>
+          <div class="product-card-body">
+            <div class="product-row"><span class="product-row-label"><i class="bi bi-person me-1"></i>Agriculteur</span><span class="product-row-value">${r.agriculteur?.name || 'N/A'}</span></div>
+            <div class="product-row"><span class="product-row-label">Quantité dispo</span><span class="product-row-value">${Number(r.quantite).toLocaleString()} kg</span></div>
+            <div class="product-row"><span class="product-row-label">Prix unitaire</span><span class="product-row-value">${Number(r.prix_unitaire).toLocaleString()} FCFA/kg</span></div>
+            <div class="product-row"><span class="product-row-label">Date récolte</span><span class="product-row-value">${r.date_recolte}</span></div>
+          </div>
+          <div class="product-card-footer">
+            ${statusBadge(r.statut)}
+            <button class="btn-gold" onclick="commander(${r.id}, ${r.quantite})"><i class="bi bi-cart-plus me-1"></i>Commander</button>
+          </div>
+        </div>
+      </div>`).join('')}
+    </div>`}
+  `;
+}
+
+async function filtrerRecoltes() {
+  const zone = document.getElementById('filtre-zone').value.trim();
+  chargerMarche(zone);
+}
+
+async function commander(recolte_id, quantite_dispo) {
+  const quantite = prompt(`Combien de kg voulez-vous commander ?\n(Maximum disponible : ${quantite_dispo} kg)`);
+  if (!quantite) return;
+  if (isNaN(quantite) || quantite <= 0) return showToast('Quantité invalide', 'error');
+  if (Number(quantite) > quantite_dispo) return showToast('Quantité dépasse le stock disponible', 'error');
+  if (!confirm(`Commander ${quantite} kg ?`)) return;
+  const data = await apiFetch('POST', '/commandes', { recolte_id, quantite: parseFloat(quantite) });
+  if (data.commande) {
+    showToast('✅ Commande passée ! ' + (data.montant || '') + ' — ' + (data.quantite_restante || ''), 'success');
+    chargerMarche();
+  } else showToast(data.message || 'Erreur', 'error');
+}
+
+async function chargerMesCommandes() {
+  loader();
+  const data = await apiFetch('GET', '/mes-commandes');
+  const commandes = Array.isArray(data) ? data : [];
+  toutesCommandes = commandes;
+  const enAttente = commandes.filter(c => c.statut === 'en_attente').length;
+  const enLivraison = commandes.filter(c => c.statut === 'en_livraison').length;
+  const livrees = commandes.filter(c => c.statut === 'livré' || c.statut === 'livre').length;
+  const c = document.getElementById('dash-content');
+  c.innerHTML = `
+    <div class="dash-header d-flex justify-content-between align-items-start">
+      <div><div class="dash-title">Mes commandes</div></div>
+      <div class="d-flex gap-2 flex-wrap">
+        <button class="btn-outline-custom btn-sm" onclick="filtrerCommandes('tous')">Toutes</button>
+        <button class="btn-outline-custom btn-sm" onclick="filtrerCommandes('en_attente')">En attente</button>
+        <button class="btn-outline-custom btn-sm" onclick="filtrerCommandes('en_livraison')">En livraison</button>
+        <button class="btn-outline-custom btn-sm" onclick="filtrerCommandes('livré')">Livrées</button>
+      </div>
+    </div>
+    <div class="row g-3 mb-4">
+      <div class="col-md-3"><div class="stat-card"><div class="stat-value">${commandes.length}</div><div class="stat-label">Total</div></div></div>
+      <div class="col-md-3"><div class="stat-card"><div class="stat-value" style="color:#854D0E">${enAttente}</div><div class="stat-label">En attente</div></div></div>
+      <div class="col-md-3"><div class="stat-card"><div class="stat-value" style="color:#1E40AF">${enLivraison}</div><div class="stat-label">En livraison</div></div></div>
+      <div class="col-md-3"><div class="stat-card"><div class="stat-value" style="color:#065F46">${livrees}</div><div class="stat-label">Livrées</div></div></div>
+    </div>
+    <div id="liste-commandes">${renderCommandes(commandes)}</div>
+  `;
+}
+
+function renderCommandes(commandes) {
+  if (commandes.length === 0) return `<div class="empty-state"><div class="empty-icon">📦</div><div class="empty-title">Aucune commande</div><div class="empty-text">Visitez le marché pour passer votre première commande.</div></div>`;
+  return `<div class="row g-3">${commandes.map(cmd => `
+    <div class="col-12">
+      <div class="product-card">
+        <div class="row g-0">
+          <div class="col-md-3">
+            <div class="product-card-header h-100 d-flex flex-column justify-content-center" style="border-radius:12px 0 0 12px">
+              <div class="product-card-name">${cmd.recolte?.produit || 'Produit'}</div>
+              <div class="product-card-zone"><i class="bi bi-geo-alt me-1"></i>${cmd.recolte?.zone || ''}</div>
+              <div class="mt-2" style="font-size:12px;opacity:0.75">${cmd.created_at?.split('T')[0] || ''}</div>
+            </div>
+          </div>
+          <div class="col-md-5 product-card-body">
+            <div class="product-row"><span class="product-row-label">Quantité commandée</span><span class="product-row-value">${cmd.quantite || 'N/A'} kg</span></div>
+            <div class="product-row"><span class="product-row-label">Montant total</span><span class="product-row-value">${fmt(cmd.montant_total)}</span></div>
+            <div class="product-row"><span class="product-row-label">Agriculteur</span><span class="product-row-value">${cmd.recolte?.agriculteur?.name || 'N/A'}</span></div>
+            ${cmd.transporteur ? `<div class="product-row"><span class="product-row-label"><i class="bi bi-truck me-1"></i>Transporteur</span><span class="product-row-value">${cmd.transporteur?.name}</span></div>` : ''}
+          </div>
+          <div class="col-md-4 p-3 d-flex flex-column justify-content-between">
+            <div>
+              <div style="font-size:12px;font-weight:600;color:#6B7280;margin-bottom:10px">SUIVI DE COMMANDE</div>
+              ${suiviCommande(cmd.statut)}
+            </div>
+            <div class="mt-2">
+              ${statusBadge(cmd.statut)}
+              ${(cmd.statut === 'en_attente' || cmd.statut === 'en_attente_confirmation') ? `
+                <button class="btn-danger-custom mt-2 w-100" onclick="annulerCommande(${cmd.id})"><i class="bi bi-x-circle me-1"></i>Annuler</button>` : ''}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`).join('')}</div>`;
+}
+
+function suiviCommande(statut) {
+  const etapes = [
+    { key: 'en_attente', label: 'Commandé', icon: '🛒' },
+    { key: 'payé', label: 'Confirmé', icon: '✅' },
+    { key: 'en_livraison', label: 'En livraison', icon: '🚚' },
+    { key: 'livré', label: 'Livré', icon: '🏠' },
+  ];
+  const ordre = ['en_attente', 'payé', 'en_livraison', 'livré', 'livre'];
+  const idx = ordre.indexOf(statut);
+  return etapes.map((e, i) => `
+    <div class="suivi-step">
+      <div class="suivi-dot ${i < idx ? 'suivi-dot-done' : i === idx ? 'suivi-dot-active' : 'suivi-dot-pending'}">${e.icon}</div>
+      <span style="font-size:12px;font-weight:${i === idx ? '600' : '400'};color:${i <= idx ? '#1A1A1A' : '#9CA3AF'}">${e.label}</span>
+      ${i === idx ? '<span style="background:#DCFCE7;color:#166534;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:600">En cours</span>' : ''}
+    </div>`).join('');
+}
+
+function filtrerCommandes(statut) {
+  const f = statut === 'tous' ? toutesCommandes : toutesCommandes.filter(c => c.statut === statut || (statut === 'livré' && c.statut === 'livre'));
+  document.getElementById('liste-commandes').innerHTML = renderCommandes(f);
+}
+
+async function annulerCommande(id) {
+  if (!confirm('Annuler cette commande ?')) return;
+  const data = await apiFetch('DELETE', '/commandes/' + id);
+  if (data.message) { showToast('Commande annulée !', 'success'); toutesCommandes = []; chargerMesCommandes(); }
+  else showToast(data.message || 'Erreur', 'error');
+}
+
+// ===== TRANSPORTEUR =====
+async function chargerLivraisons() {
+  loader();
+  const data = await apiFetch('GET', '/commandes-disponibles');
+  const commandes = Array.isArray(data) ? data : [];
+  const c = document.getElementById('dash-content');
+  c.innerHTML = `
+    <div class="dash-header d-flex justify-content-between align-items-start">
+      <div><div class="dash-title">Livraisons disponibles</div><div class="dash-subtitle">${commandes.length} livraison(s) à prendre en charge</div></div>
+      <button class="btn-outline-custom" onclick="chargerLivraisons()"><i class="bi bi-arrow-clockwise me-1"></i>Actualiser</button>
+    </div>
+    ${commandes.length === 0 ? `
+      <div class="empty-state"><div class="empty-icon">🚚</div><div class="empty-title">Aucune livraison disponible</div><div class="empty-text">Les nouvelles commandes confirmées apparaîtront ici.</div></div>` : `
+    <div class="row g-3">
+      ${commandes.map(cmd => `
+      <div class="col-md-6 col-lg-4">
+        <div class="product-card">
+          <div class="product-card-header">
+            <div class="product-card-name">${cmd.recolte?.produit || 'Produit'}</div>
+            <div class="product-card-zone"><i class="bi bi-geo-alt me-1"></i>${cmd.recolte?.zone || ''}</div>
+          </div>
+          <div class="product-card-body">
+            <div class="product-row"><span class="product-row-label"><i class="bi bi-person me-1"></i>Client</span><span class="product-row-value">${cmd.client?.name || 'N/A'}</span></div>
+            <div class="product-row"><span class="product-row-label">Téléphone</span><span class="product-row-value">${cmd.client?.telephone || 'N/A'}</span></div>
+            <div class="product-row"><span class="product-row-label">Quantité</span><span class="product-row-value">${cmd.quantite || 'N/A'} kg</span></div>
+            <div class="product-row"><span class="product-row-label">Montant</span><span class="product-row-value">${fmt(cmd.montant_total)}</span></div>
+            <div class="product-row"><span class="product-row-label">Zone</span><span class="product-row-value">${cmd.recolte?.zone || 'N/A'}</span></div>
+          </div>
+          <div class="product-card-footer">
+            ${statusBadge(cmd.statut)}
+            <button class="btn-primary-custom" onclick="assignerLivraison(${cmd.id})"><i class="bi bi-truck me-1"></i>Prendre en charge</button>
+          </div>
+        </div>
+      </div>`).join('')}
+    </div>`}
+  `;
+}
+
+async function assignerLivraison(id) {
+  if (!confirm('Prendre en charge cette livraison ?')) return;
+  const data = await apiFetch('PUT', '/commandes/' + id + '/assign-transport');
+  if (data.commande) { showToast('✅ Livraison prise en charge !', 'success'); chargerLivraisons(); }
+  else showToast(data.message || 'Erreur', 'error');
+}
+
+async function chargerMesLivraisons() {
+  loader();
+  const data = await apiFetch('GET', '/mes-livraisons');
+  const commandes = Array.isArray(data) ? data : [];
+  const enCours = commandes.filter(c => c.statut === 'en_livraison').length;
+  const terminees = commandes.filter(c => c.statut === 'livré' || c.statut === 'livre').length;
+  const c = document.getElementById('dash-content');
+  c.innerHTML = `
+    <div class="dash-header"><div class="dash-title">Mes livraisons</div></div>
+    <div class="row g-3 mb-4">
+      <div class="col-md-4"><div class="stat-card"><div class="stat-value">${commandes.length}</div><div class="stat-label">Total</div></div></div>
+      <div class="col-md-4"><div class="stat-card"><div class="stat-value" style="color:#1E40AF">${enCours}</div><div class="stat-label">En cours</div></div></div>
+      <div class="col-md-4"><div class="stat-card"><div class="stat-value" style="color:#065F46">${terminees}</div><div class="stat-label">Terminées</div></div></div>
+    </div>
+    ${commandes.length === 0 ? `
+      <div class="empty-state"><div class="empty-icon">📦</div><div class="empty-title">Aucune livraison effectuée</div></div>` : `
+    <div class="row g-3">
+      ${commandes.map(cmd => `
+      <div class="col-md-6 col-lg-4">
+        <div class="product-card">
+          <div class="product-card-header">
+            <div class="product-card-name">${cmd.recolte?.produit || 'Produit'}</div>
+            <div class="product-card-zone"><i class="bi bi-geo-alt me-1"></i>${cmd.recolte?.zone || ''}</div>
+          </div>
+          <div class="product-card-body">
+            <div class="product-row"><span class="product-row-label">Client</span><span class="product-row-value">${cmd.client?.name || 'N/A'}</span></div>
+            <div class="product-row"><span class="product-row-label">Téléphone</span><span class="product-row-value">${cmd.client?.telephone || 'N/A'}</span></div>
+            <div class="product-row"><span class="product-row-label">Quantité</span><span class="product-row-value">${cmd.quantite || 'N/A'} kg</span></div>
+            <div class="product-row"><span class="product-row-label">Montant</span><span class="product-row-value">${fmt(cmd.montant_total)}</span></div>
+            <div class="product-row"><span class="product-row-label">Date</span><span class="product-row-value">${cmd.created_at?.split('T')[0] || ''}</span></div>
+          </div>
+          <div class="product-card-footer">
+            ${statusBadge(cmd.statut)}
+            ${cmd.statut === 'en_livraison' ? `<button class="btn-primary-custom" onclick="marquerLivre(${cmd.id})"><i class="bi bi-check2 me-1"></i>Marquer livré</button>` : ''}
+          </div>
+        </div>
+      </div>`).join('')}
+    </div>`}
+  `;
+}
+
+async function marquerLivre(id) {
+  if (!confirm('Confirmer la livraison ?')) return;
+  const data = await apiFetch('PUT', '/commandes/' + id + '/livre');
+  if (data.commande) { showToast('✅ Livraison confirmée !', 'success'); chargerMesLivraisons(); }
+  else showToast(data.message || 'Erreur', 'error');
+}
+
+// ===== STATISTIQUES =====
+async function chargerStatistiques() {
+  loader();
+  const data = await apiFetch('GET', '/statistiques');
+  const c = document.getElementById('dash-content');
+
+  if (user.role === 'agriculteur') {
+    c.innerHTML = `
+      <div class="dash-header"><div class="dash-title">Mes statistiques</div></div>
+      <div class="row g-3 mb-4">
+        <div class="col-md-3"><div class="stat-card"><div class="stat-icon" style="background:#DCFCE7">🌾</div><div class="stat-value">${data.total_recoltes}</div><div class="stat-label">Total récoltes</div></div></div>
+        <div class="col-md-3"><div class="stat-card"><div class="stat-icon" style="background:#D1FAE5">✅</div><div class="stat-value" style="color:#065F46">${data.recoltes_disponibles}</div><div class="stat-label">Disponibles</div></div></div>
+        <div class="col-md-3"><div class="stat-card"><div class="stat-icon" style="background:#FEE2E2">💰</div><div class="stat-value" style="color:#991B1B">${data.recoltes_vendues}</div><div class="stat-label">Vendues</div></div></div>
+        <div class="col-md-3"><div class="stat-card"><div class="stat-icon" style="background:#D1FAE5">💵</div><div class="stat-value" style="color:#065F46;font-size:20px">${fmt(data.revenus_total)}</div><div class="stat-label">Revenus totaux</div></div></div>
+      </div>
+      <div class="stat-card p-4">
+        <h6 class="fw-bold mb-3" style="color:var(--green-dark)">📊 Résumé</h6>
+        <p class="text-muted mb-0">Vous avez publié <strong>${data.total_recoltes}</strong> récoltes dont <strong>${data.recoltes_vendues}</strong> vendues et <strong>${data.recoltes_disponibles}</strong> encore disponibles. Vos revenus totaux s'élèvent à <strong>${fmt(data.revenus_total)}</strong>.</p>
+      </div>
+    `;
+    chargerStatsProduits();
+  }
+
+  if (user.role === 'client') {
+    c.innerHTML = `
+      <div class="dash-header"><div class="dash-title">Mes statistiques</div></div>
+      <div class="row g-3 mb-4">
+        <div class="col-md-4"><div class="stat-card"><div class="stat-icon" style="background:#DBEAFE">🛒</div><div class="stat-value">${data.total_commandes}</div><div class="stat-label">Total commandes</div></div></div>
+        <div class="col-md-4"><div class="stat-card"><div class="stat-icon" style="background:#D1FAE5">✅</div><div class="stat-value" style="color:#065F46">${data.commandes_livrees}</div><div class="stat-label">Livrées</div></div></div>
+        <div class="col-md-4"><div class="stat-card"><div class="stat-icon" style="background:#FEF9C3">💵</div><div class="stat-value" style="color:#854D0E;font-size:20px">${fmt(data.total_depense)}</div><div class="stat-label">Total dépensé</div></div></div>
+      </div>
+      <div class="stat-card p-4">
+        <h6 class="fw-bold mb-3" style="color:var(--green-dark)">📊 Résumé</h6>
+        <p class="text-muted mb-0">Vous avez passé <strong>${data.total_commandes}</strong> commandes dont <strong>${data.commandes_livrees}</strong> livrées. Total dépensé : <strong>${fmt(data.total_depense)}</strong>.</p>
+      </div>
+    `;
+  }
+
+  if (user.role === 'transporteur') {
+    c.innerHTML = `
+      <div class="dash-header"><div class="dash-title">Mes statistiques</div></div>
+      <div class="row g-3 mb-4">
+        <div class="col-md-4"><div class="stat-card"><div class="stat-icon" style="background:#DBEAFE">🚚</div><div class="stat-value">${data.total_livraisons}</div><div class="stat-label">Total livraisons</div></div></div>
+        <div class="col-md-4"><div class="stat-card"><div class="stat-icon" style="background:#D1FAE5">✅</div><div class="stat-value" style="color:#065F46">${data.livraisons_terminees}</div><div class="stat-label">Terminées</div></div></div>
+        <div class="col-md-4"><div class="stat-card"><div class="stat-icon" style="background:#DBEAFE">🔄</div><div class="stat-value" style="color:#1E40AF">${data.en_cours}</div><div class="stat-label">En cours</div></div></div>
+      </div>
+    `;
+  }
+}
+
+async function chargerStatsProduits() {
+  const data = await apiFetch('GET', '/commandes-sur-mes-recoltes');
+  const commandes = Array.isArray(data) ? data : [];
+  const produits = {};
+  commandes.forEach(cmd => {
+    const p = cmd.recolte?.produit || 'Inconnu';
+    if (!produits[p]) produits[p] = { count: 0, montant: 0, quantite: 0 };
+    produits[p].count++;
+    produits[p].montant += Number(cmd.montant_total);
+    produits[p].quantite += Number(cmd.quantite || 0);
+  });
+  const c = document.getElementById('dash-content');
+  if (!c) return;
+  c.innerHTML += `
+    <div class="stat-card p-4 mt-3">
+      <h6 class="fw-bold mb-3" style="color:var(--green-dark)">🌾 Statistiques par produit</h6>
+      ${Object.keys(produits).length === 0 ? '<p class="text-muted">Aucune vente pour le moment.</p>' : `
+      <div class="table-responsive">
+        <table class="table table-custom">
+          <thead><tr><th>Produit</th><th>Commandes</th><th>Quantité</th><th>Revenus</th></tr></thead>
+          <tbody>
+            ${Object.entries(produits).map(([p, s]) => `<tr>
+              <td class="fw-bold">${p}</td>
+              <td>${s.count}</td>
+              <td>${s.quantite.toLocaleString()} kg</td>
+              <td class="fw-bold" style="color:#065F46">${fmt(s.montant)}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`}
+    </div>
+  `;
+}
+
+// ===== GRAPHIQUES =====
+async function chargerGraphique() {
+  const c = document.getElementById('dash-content');
+  c.innerHTML = `
+    <div class="dash-header"><div class="dash-title">📈 Graphiques</div></div>
+    <div class="row g-3">
+      <div class="col-md-6"><div class="stat-card p-4"><h6 class="fw-bold mb-3" style="color:var(--green-dark)">Revenus par produit</h6><canvas id="chart-produits" height="250"></canvas></div></div>
+      <div class="col-md-6"><div class="stat-card p-4"><h6 class="fw-bold mb-3" style="color:var(--green-dark)">Statut des commandes</h6><canvas id="chart-statuts" height="250"></canvas></div></div>
+    </div>
+  `;
+  const data = await apiFetch('GET', '/commandes-sur-mes-recoltes');
+  const commandes = Array.isArray(data) ? data : [];
+  const produits = {};
+  commandes.forEach(cmd => {
+    const p = cmd.recolte?.produit || 'Inconnu';
+    produits[p] = (produits[p] || 0) + Number(cmd.montant_total);
+  });
+  new Chart(document.getElementById('chart-produits'), {
+    type: 'bar',
+    data: {
+      labels: Object.keys(produits),
+      datasets: [{ label: 'Revenus (FCFA)', data: Object.values(produits), backgroundColor: '#2D6A4F', borderRadius: 8 }]
+    },
+    options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+  });
+  const statuts = {
+    'En attente': commandes.filter(c => c.statut === 'en_attente').length,
+    'Confirmées': commandes.filter(c => c.statut === 'payé').length,
+    'En livraison': commandes.filter(c => c.statut === 'en_livraison').length,
+    'Livrées': commandes.filter(c => c.statut === 'livré' || c.statut === 'livre').length,
+  };
+  new Chart(document.getElementById('chart-statuts'), {
+    type: 'doughnut',
+    data: {
+      labels: Object.keys(statuts),
+      datasets: [{ data: Object.values(statuts), backgroundColor: ['#B7791F', '#065F46', '#1E40AF', '#2D6A4F'], borderWidth: 0 }]
+    },
+    options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+  });
+}
+
+// ===== PROFIL =====
+async function chargerMonProfil() {
+  const c = document.getElementById('dash-content');
+  c.innerHTML = `
+    <div class="dash-header"><div class="dash-title">Mon profil</div></div>
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <div class="stat-card p-4">
+          <div class="profil-avatar">${user.role === 'agriculteur' ? '🌾' : user.role === 'client' ? '🛒' : '🚚'}</div>
+          <div class="text-center mb-4">
+            <h5 class="fw-bold" style="color:var(--green-dark)">${user.name}</h5>
+            <span style="background:var(--green-pale);color:var(--green);padding:4px 14px;border-radius:20px;font-size:13px;font-weight:600">${user.role}</span>
+          </div>
+          <div class="mb-3"><label class="form-label">Nom complet</label><input type="text" class="form-control" id="profil-name" value="${user.name}"></div>
+          <div class="mb-3">
+            <label class="form-label">Téléphone</label>
+            <input type="text" class="form-control" value="${user.telephone}" disabled style="background:#F9FAFB">
+            <small class="text-muted">Le téléphone ne peut pas être modifié</small>
+          </div>
+          <div class="mb-4"><label class="form-label">Nouveau mot de passe</label><input type="password" class="form-control" id="profil-pwd" placeholder="Laisser vide pour ne pas changer"></div>
+          <button class="btn-green" onclick="sauvegarderProfil()"><i class="bi bi-check2 me-2"></i>Sauvegarder</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+async function sauvegarderProfil() {
+  const name = document.getElementById('profil-name').value.trim();
+  const password = document.getElementById('profil-pwd').value;
+  const body = {};
+  if (name) body.name = name;
+  if (password) body.password = password;
+  if (Object.keys(body).length === 0) return showToast('Aucune modification', 'warning');
+  const data = await apiFetch('PUT', '/mon-profil', body);
+  if (data.user) {
+    user.name = data.user.name;
+    localStorage.setItem('sr_user', JSON.stringify(user));
+    document.getElementById('nav-name').textContent = user.name;
+    document.getElementById('sidebar-name').textContent = user.name;
+    showToast('Profil modifié !', 'success');
+  } else showToast(data.message || 'Erreur', 'error');
+}
+// ===== ADMIN =====
+async function chargerDashboardAdmin() {
+  loader();
+  const data = await apiFetch('GET', '/admin/dashboard');
+  const c = document.getElementById('dash-content');
+  c.innerHTML = `
+    <div class="dash-header"><div class="dash-title">Tableau de bord Admin</div><div class="dash-subtitle">Vue globale de la plateforme SunuRécolte</div></div>
+    <div class="row g-3 mb-4">
+      <div class="col-12"><h6 class="fw-bold" style="color:var(--green-dark)">👥 Utilisateurs</h6></div>
+      <div class="col-md-3"><div class="stat-card"><div class="stat-icon" style="background:#DCFCE7">👥</div><div class="stat-value">${data.utilisateurs.total}</div><div class="stat-label">Total utilisateurs</div></div></div>
+      <div class="col-md-3"><div class="stat-card"><div class="stat-icon" style="background:#D1FAE5">🌾</div><div class="stat-value" style="color:#065F46">${data.utilisateurs.agriculteurs}</div><div class="stat-label">Agriculteurs</div></div></div>
+      <div class="col-md-3"><div class="stat-card"><div class="stat-icon" style="background:#DBEAFE">🛒</div><div class="stat-value" style="color:#1E40AF">${data.utilisateurs.clients}</div><div class="stat-label">Clients</div></div></div>
+      <div class="col-md-3"><div class="stat-card"><div class="stat-icon" style="background:#FEF9C3">🚚</div><div class="stat-value" style="color:#854D0E">${data.utilisateurs.transporteurs}</div><div class="stat-label">Transporteurs</div></div></div>
+    </div>
+    <div class="row g-3 mb-4">
+      <div class="col-12"><h6 class="fw-bold" style="color:var(--green-dark)">🌾 Récoltes</h6></div>
+      <div class="col-md-4"><div class="stat-card"><div class="stat-value">${data.recoltes.total}</div><div class="stat-label">Total récoltes</div></div></div>
+      <div class="col-md-4"><div class="stat-card"><div class="stat-value" style="color:#065F46">${data.recoltes.disponibles}</div><div class="stat-label">Disponibles</div></div></div>
+      <div class="col-md-4"><div class="stat-card"><div class="stat-value" style="color:#991B1B">${data.recoltes.vendues}</div><div class="stat-label">Vendues</div></div></div>
+    </div>
+    <div class="row g-3 mb-4">
+      <div class="col-12"><h6 class="fw-bold" style="color:var(--green-dark)">📦 Commandes</h6></div>
+      <div class="col-md-3"><div class="stat-card"><div class="stat-value">${data.commandes.total}</div><div class="stat-label">Total</div></div></div>
+      <div class="col-md-3"><div class="stat-card"><div class="stat-value" style="color:#854D0E">${data.commandes.en_attente}</div><div class="stat-label">En attente</div></div></div>
+      <div class="col-md-3"><div class="stat-card"><div class="stat-value" style="color:#1E40AF">${data.commandes.en_livraison}</div><div class="stat-label">En livraison</div></div></div>
+      <div class="col-md-3"><div class="stat-card"><div class="stat-value" style="color:#065F46">${data.commandes.livrees}</div><div class="stat-label">Livrées</div></div></div>
+    </div>
+    <div class="stat-card p-4">
+      <h6 class="fw-bold mb-2" style="color:var(--green-dark)">💰 Revenus totaux de la plateforme</h6>
+      <div class="stat-value" style="color:#065F46">${fmt(data.revenus_total)}</div>
+    </div>
+  `;
+}
+
+async function chargerUtilisateurs() {
+  loader();
+  const data = await apiFetch('GET', '/admin/utilisateurs');
+  const users = Array.isArray(data) ? data : [];
+  const c = document.getElementById('dash-content');
+  c.innerHTML = `
+    <div class="dash-header d-flex justify-content-between align-items-start">
+      <div><div class="dash-title">Utilisateurs</div><div class="dash-subtitle">${users.length} utilisateur(s) inscrit(s)</div></div>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-custom align-middle">
+        <thead><tr>
+          <th>Nom</th><th>Téléphone</th><th>Rôle</th><th>Statut</th><th>Inscription</th><th>Actions</th>
+        </tr></thead>
+        <tbody>
+          ${users.map(u => `<tr>
+            <td class="fw-bold">${u.name}</td>
+            <td>${u.telephone}</td>
+            <td>${u.role}</td>
+            <td>${u.suspendu ? '<span class="badge-vendu">Suspendu</span>' : '<span class="badge-disponible">Actif</span>'}</td>
+            <td>${u.created_at?.split('T')[0] || ''}</td>
+            <td>
+              <div class="d-flex gap-2">
+                ${u.role !== 'admin' ? `
+                  <button class="btn-outline-custom btn-sm" onclick="toggleSuspendre(${u.id})">
+                    ${u.suspendu ? '<i class="bi bi-check2-circle me-1"></i>Réactiver' : '<i class="bi bi-pause-circle me-1"></i>Suspendre'}
+                  </button>
+                  <button class="btn-danger-custom" onclick="supprimerUtilisateur(${u.id}, '${u.name}')">
+                    <i class="bi bi-trash"></i>
+                  </button>` : '<span class="text-muted small">Admin</span>'}
+              </div>
+            </td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+async function toggleSuspendre(id) {
+  const data = await apiFetch('PUT', '/admin/utilisateurs/' + id + '/toggle');
+  if (data.message) { showToast(data.message, 'success'); chargerUtilisateurs(); }
+  else showToast(data.message || 'Erreur', 'error');
+}
+
+async function supprimerUtilisateur(id, nom) {
+  if (!confirm('Supprimer ' + nom + ' ?')) return;
+  const data = await apiFetch('DELETE', '/admin/utilisateurs/' + id);
+  if (data.message) { showToast(data.message, 'success'); chargerUtilisateurs(); }
+  else showToast(data.message || 'Erreur', 'error');
+}
+
+async function chargerRecoltesAdmin() {
+  loader();
+  const data = await apiFetch('GET', '/admin/recoltes');
+  const recoltes = Array.isArray(data) ? data : [];
+  const c = document.getElementById('dash-content');
+  c.innerHTML = `
+    <div class="dash-header"><div class="dash-title">Toutes les récoltes</div><div class="dash-subtitle">${recoltes.length} récolte(s) sur la plateforme</div></div>
+    <div class="table-responsive">
+      <table class="table table-custom align-middle">
+        <thead><tr>
+          <th>Produit</th><th>Agriculteur</th><th>Zone</th><th>Quantité</th><th>Prix/kg</th><th>Date</th><th>Statut</th>
+        </tr></thead>
+        <tbody>
+          ${recoltes.map(r => `<tr>
+            <td class="fw-bold">${r.produit}</td>
+            <td>${r.agriculteur?.name || 'N/A'}</td>
+            <td>${r.zone}</td>
+            <td>${Number(r.quantite).toLocaleString()} kg</td>
+            <td>${Number(r.prix_unitaire).toLocaleString()} FCFA</td>
+            <td>${r.date_recolte}</td>
+            <td>${statusBadge(r.statut)}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+async function chargerCommandesAdmin() {
+  loader();
+  const data = await apiFetch('GET', '/admin/commandes');
+  const commandes = Array.isArray(data) ? data : [];
+  const c = document.getElementById('dash-content');
+  c.innerHTML = `
+    <div class="dash-header"><div class="dash-title">Toutes les commandes</div><div class="dash-subtitle">${commandes.length} commande(s) sur la plateforme</div></div>
+    <div class="table-responsive">
+      <table class="table table-custom align-middle">
+        <thead><tr>
+          <th>Produit</th><th>Client</th><th>Transporteur</th><th>Quantité</th><th>Montant</th><th>Date</th><th>Statut</th>
+        </tr></thead>
+        <tbody>
+          ${commandes.map(cmd => `<tr>
+            <td class="fw-bold">${cmd.recolte?.produit || 'N/A'}</td>
+            <td>${cmd.client?.name || 'N/A'}</td>
+            <td>${cmd.transporteur?.name || '<span class="text-muted">Non assigné</span>'}</td>
+            <td>${cmd.quantite || 'N/A'} kg</td>
+            <td class="fw-bold">${fmt(cmd.montant_total)}</td>
+            <td>${cmd.created_at?.split('T')[0] || ''}</td>
+            <td>${statusBadge(cmd.statut)}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+// INIT
+if (token && user) initDashboard();
+</script>
+</body>
+</html>

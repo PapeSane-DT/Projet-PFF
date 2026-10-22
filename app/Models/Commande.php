@@ -10,12 +10,13 @@ class Commande extends Model
     use HasFactory;
 
     protected $fillable = [
-        'recolte_id',
-        'client_id',
-        'transporteur_id',
-        'montant_total',
-        'statut',
-    ];
+    'recolte_id',
+    'client_id',
+    'transporteur_id',
+    'quantite',
+    'montant_total',
+    'statut',
+];
 
     // Une commande appartient à une récolte
     public function recolte()

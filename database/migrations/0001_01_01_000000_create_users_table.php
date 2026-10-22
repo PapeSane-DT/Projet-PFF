@@ -13,7 +13,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('telephone')->unique();
             $table->string('password');
-            $table->enum('role', ['agriculteur', 'transporteur', 'client'])->default('client');
+            $table->enum('role', ['agriculteur', 'transporteur', 'client', 'admin'])->default('client');
+            $table->boolean('suspendu')->default(false);
             $table->timestamps();
         });
 

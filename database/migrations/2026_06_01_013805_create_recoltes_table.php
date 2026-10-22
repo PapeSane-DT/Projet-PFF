@@ -16,7 +16,8 @@ return new class extends Migration
             $table->decimal('prix_unitaire', 10, 2);
             $table->string('zone');
             $table->date('date_recolte');
-            $table->enum('statut', ['disponible', 'vendu'])->default('disponible');
+           $table->enum('statut', ['disponible', 'en_attente_confirmation', 'vendu'])->default('disponible');
+           $table->string('image')->nullable();
             $table->timestamps();
         });
     }
